@@ -12,4 +12,5 @@ export { default as Inventory } from "./InventoryView";
 
 // UI Sub-Components
 export { default as StoryCard } from "./uiComponents/StoryCard";
-export { default as EnhancedTable } from "./uiComponents/ProductsList";
+export { default as DataTable } from "./uiComponents/ProductsList";
+export { default as InventoryCart } from "./uiComponents/InventoryCart";
