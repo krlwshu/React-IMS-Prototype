@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Typography from '@material-ui/core/Typography'
 import { DataTable, InventoryCart } from "./index";
 import Badge from '@mui/material/Badge';
@@ -21,6 +21,12 @@ function Inventory() {
     const productCount = orderState.length? orderState.map(item => item.qty).reduce((prev, next) => prev + next) : 0;
     
 
+    useEffect(() => {
+    
+    }, [orderState]);
+    
+
+    // alert(localStorage.getItem("name"))
 
     return (
         <Wrapper >

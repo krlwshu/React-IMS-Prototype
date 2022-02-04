@@ -1,6 +1,8 @@
 import React from "react";
 import { StoryCard } from "./index";
 
+localStorage.setItem("supplier_id", 1)
+
 function Home() {
   return (
     <div className="home">

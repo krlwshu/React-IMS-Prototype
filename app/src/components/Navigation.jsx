@@ -24,17 +24,27 @@ function Navigation() {
               </li>
               <li className="nav-item">
                 <NavLink className="nav-link" to="/about">
-                  About
+                  Dashboard
                 </NavLink>
               </li>
               <li className="nav-item">
                 <NavLink className="nav-link" to="/contact">
-                  Contact
+                  Manage Products
                 </NavLink>
               </li>
               <li className="nav-item">
                 <NavLink className="nav-link" to="/blog">
-                  Blog
+                  Orders
+                </NavLink>
+              </li>
+              <li className="nav-item">
+                <NavLink className="nav-link" to="/manageorders">
+                  Order Requests
+                </NavLink>
+              </li>
+              <li className="nav-item">
+                <NavLink className="nav-link" to="/supplierorders">
+                  Order Requests
                 </NavLink>
               </li>
             </ul>

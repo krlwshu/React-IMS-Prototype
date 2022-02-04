@@ -17,6 +17,6 @@ export const StyledButton = styled(IconButton)`
 
 export const StyledBox = styled(Box)`
 &&{  
-    width:40vw;
+    width:50vw;
 `;
 

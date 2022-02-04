@@ -198,36 +198,50 @@ function roundedMedian(leafValues) {
 function ProductsList({setOrderState, orderState}) {
 
 
+  const handleAddItem = (row) => {
+    setOrderState((prev) => {
+      const isItemInCart = prev.find((item) => item.prod_id === row.original.id);
 
+      if (isItemInCart) {
+        return prev.map((item) =>
+          item.prod_id === row.original.id
+            ? { ...item, qty: item.qty + 1 }
+            : item
+        );
+      }
 
-  function handleAddItem(row) {
-    let index = orderState.findIndex(element => element.prod_id ==row.original.id);
-    console.log(row.original.id);
-    if (index >=0){
-      let temp_state = [...orderState];
-      temp_state[index].qty ++;
-      setOrderState(temp_state);
-    } else{
-      setOrderState(prevOrders => 
-        [...prevOrders, 
-          {prod_id: row.original.id, 
+      console.log(row);
+
+      return [...prev, { ...orderState, 
+                prod_id: row.original.id, 
             product: row.original.product_code,
             qty: 1,
             supplier: row.original.supplier,
             manufacturer: row.original.manufacturer,
             description: row.original.description,
-          }
-          ])
-    }
+          
+      
+      
+      }];
+    });
+  };
 
-  }
-  console.log(orderState);
 
-  function handleDeleteItem(row) {
-    console.log(row.original.product_code);
-    setOrderState(prevOrders => [...prevOrders, {product:row.original.product_code}])
-  }
-    
+      
+
+  const handleDeleteItem = (row) => {
+    setOrderState((prev) =>
+      prev.reduce((acc, item) => {
+        if (item.prod_id === row.original.id) {
+          if (item.qty === 1) return acc;
+          return [...acc, { ...item, qty: item.qty - 1 }];
+        } else {
+          return [...acc, item];
+        }
+      }, [])
+    );
+  };
+
 
   const columns = React.useMemo(
     () => [
@@ -285,8 +299,8 @@ function ProductsList({setOrderState, orderState}) {
     async function getData() {
       await axios
         .post("/getProducts")
-        .then((response) => {
-          setData(response.data);
+        .then(({data}) => {
+          setData(data);
           setLoadingData(false);
         });
     }
