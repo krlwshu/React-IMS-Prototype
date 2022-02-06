@@ -8,14 +8,14 @@ import {
   Navigation,
   Footer,
   Home,
-  About,
   ManageProducts,
   Blog,
   Posts,
   Post,
   Inventory,
   ManageOrders,
-  SupplierManageOrders
+  SupplierManageOrders,
+  Dashboard
 } from "./components";
 
 ReactDOM.render(
@@ -24,7 +24,7 @@ ReactDOM.render(
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/inventory" element={<Inventory />} />
-      <Route path="/about" element={<About />} />
+      <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/manageproducts" element={<ManageProducts />} />
       <Route path="/supplierorders" element={<SupplierManageOrders />} />
       <Route path="/manageorders" element={<ManageOrders />} />

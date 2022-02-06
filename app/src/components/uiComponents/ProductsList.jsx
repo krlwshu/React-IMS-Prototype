@@ -265,7 +265,7 @@ function ProductsList({setOrderState, orderState}) {
         Header: 'Description',
         accessor: 'description',
         aggregate: 'count',
-        Aggregated: ({ value }) => `${value} Names`,
+        Aggregated: ({ value }) => `${value} Variants`,
         className: 'desc'
       },
       {

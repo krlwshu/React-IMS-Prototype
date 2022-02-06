@@ -25,7 +25,7 @@ function Home() {
               avatar="avatar1.png"
               name="Jane"
               journey="Supplier Journey"
-              link="supplier"
+              link="supplierorders"
             />
           </div>
         </div>

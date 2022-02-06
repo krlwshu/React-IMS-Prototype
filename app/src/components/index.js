@@ -3,7 +3,7 @@ export { default as Navigation } from "./Navigation";
 export { default as NavigationA } from "./NavigationA";
 export { default as Footer } from "./Footer";
 export { default as Home } from "./Home";
-export { default as About } from "./About";
+export { default as Dashboard } from "./Dashboard";
 export { default as ManageProducts } from "./ManageProducts";
 export { default as ManageOrders } from "./ManageOrders";
 export { default as SupplierManageOrders } from "./SupplierManageOrders";
