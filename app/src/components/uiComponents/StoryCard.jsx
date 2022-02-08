@@ -18,7 +18,7 @@ const bull = (
 
 export default function StoryCard(props) {
   return (
-    <Card sx={{ minWidth: 275 }}>
+    <Card sx={{ minWidth: 275, mt:10 }}>
       <CardContent>
         <Typography variant="h5" component="div">
           {props.name}
@@ -32,7 +32,7 @@ export default function StoryCard(props) {
         </Typography>
         <Box sx={{ mt: "2rem" }} textAlign='left'>
           <Link href={props.link}>
-            <Button variant="outlined">{props.journey}</Button>
+            <Button onClick={props.onClick} variant="outlined">{props.journey}</Button>
           </Link>
         </Box>
       </CardContent>

@@ -16,4 +16,5 @@ export { default as Inventory } from "./InventoryView";
 export { default as StoryCard } from "./uiComponents/StoryCard";
 export { default as DataTable } from "./uiComponents/ProductsList";
 export { default as InventoryCart } from "./uiComponents/InventoryCart";
+export { default as SearchButton } from "./uiComponents/SearchButton";
 // export { default as ConfirmModal } from "./uiComponents/ConfirmModal";

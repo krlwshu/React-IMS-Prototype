@@ -37,8 +37,9 @@ export default function DataTable() {
 
 
   async function getData() {
+    const filter = {supplierId: parseInt(localStorage.getItem("supplier_id"))}
     await axios
-      .post("/getOrderItems")
+      .post("/getOrderItems", filter)
       .then(({ data }) => {
         setOrderData(data);
         setLoadingData(false);
@@ -70,6 +71,7 @@ export default function DataTable() {
 
 
   const columns = [
+    { field: 'parent_order', headerName: 'Main Order', width: '200' },
     { field: 'id', headerName: 'Item Order Number', width: '200' },
     { field: 'product_code', headerName: 'Product Code', width: 130 },
     { field: 'manufacturer', headerName: 'Manufacturer', width: 130 },

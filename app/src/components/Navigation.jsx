@@ -29,12 +29,7 @@ function Navigation() {
               </li>
               <li className="nav-item">
                 <NavLink className="nav-link" to="/manageproducts">
-                  Manage Products
-                </NavLink>
-              </li>
-              <li className="nav-item">
-                <NavLink className="nav-link" to="/blog">
-                  Orders
+                  Add Products
                 </NavLink>
               </li>
               <li className="nav-item">
@@ -44,7 +39,7 @@ function Navigation() {
               </li>
               <li className="nav-item">
                 <NavLink className="nav-link" to="/supplierorders">
-                  Order Requests
+                  Supplier Order View
                 </NavLink>
               </li>
             </ul>

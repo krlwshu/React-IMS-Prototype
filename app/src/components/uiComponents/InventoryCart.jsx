@@ -30,6 +30,8 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
 
+import axios from 'axios';
+
 import { Box, Stack } from "@mui/material";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -45,8 +47,22 @@ export default function InventoryCart(props) {
     }, [orderState]);
     
 
+    const [orderProcessStatus, setOrderProcessStatus] = React.useState({orders:[], showAlert: false})
     const handleSubmit = () => {
-        setOpenState(false)
+
+        axios.post('/submitOrder', orderState)
+            .then((response) => {
+                if (response) {
+                    orderProcessStatus.showAlert = true;
+                    orderProcessStatus.orders = [...new Set(response.data.map(item => item.orderId))];
+                    setOrderProcessStatus(orderProcessStatus)
+                    setOrderState([]);
+                }
+                else {
+                    console.log("Error processing request");
+                }
+            })
+            .catch(e => { console.log(e) })
         setOpen(false);
     };
     
@@ -86,9 +102,9 @@ export default function InventoryCart(props) {
 
             <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
                 {orderState.map(item => (
-                    <React.Fragment>
+                    <React.Fragment key={item.id}>
 
-                        <ListItem sx={{ pl: 4, pb: 2 }} key={item.prod_id} button key={item.prod_id}>
+                        <ListItem key={item.id} sx={{ pl: 4, pb: 2 }} key={item.prod_id} button key={item.prod_id}>
                             <ListItemAvatar>
                                 <Avatar>
                                     <RouterIcon />
@@ -119,11 +135,14 @@ export default function InventoryCart(props) {
             <Box sx={{ m: 3 }} >
 
                 <Typography variant="h3" component="h2">
-                        <Alert severity="info">The supplier will be notified by email. You can view updates in manage orders section.</Alert>
-                    <Stack spacing={2} pt={2} direction="row">
+                        <Alert hidden={true} severity="info">Orders</Alert>
+                    <Stack hidden={orderProcessStatus.showAlert} spacing={2} pt={2} direction="row">
                         <Button variant="contained" onClick={handleClickOpen}>Submit</Button>
                         <Button variant="outlined">Remove All Items</Button>
                     </Stack>
+                    <Alert hidden={!orderProcessStatus.showAlert} severity="success">
+                        Order processed! Order IDs: 
+                        {orderProcessStatus.orders.join(", ")}</Alert>
                 </Typography>
             </Box>
 
@@ -137,8 +156,8 @@ export default function InventoryCart(props) {
                 <DialogTitle>{"Confirm Order Submission?"}</DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-slide-description">
-                        <Alert severity="info">The supplier will be notified by email. You can view updates in manage orders section.</Alert>
                     </DialogContentText>
+                        <Alert severity="info">The supplier will be notified by email. You can view updates in manage orders section.</Alert>
                 </DialogContent>
                 <DialogActions>
                     <Button color="success" variant="outlined" onClick={handleSubmit}>OK</Button>

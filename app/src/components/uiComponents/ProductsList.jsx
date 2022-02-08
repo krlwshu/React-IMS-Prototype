@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from 'styled-components'
-import { useTable, useGroupBy, useExpanded, useSortBy } from 'react-table'
+import { useTable, useGroupBy, useExpanded, useFilters,useGlobalFilter, useSortBy } from 'react-table'
 import axios from "axios";
 import BTable from 'react-bootstrap/Table';
 // import 'bootstrap/dist/css/bootstrap.min.css';
@@ -12,6 +12,8 @@ import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import {styledInvList} from './styled/inventory-table';
+
+import SearchButton from './SearchButton'
 
 
 const Styles = styledInvList;
@@ -31,18 +33,32 @@ function useControlledState(state, { instance }) {
 }
 
 function Table({ columns, data }) {
+
+
+  const [filterInput, setFilterInput] = useState("");
+
+  // Update the state when input changes
+  const handleFilterChange = e => {
+    const value = e.target.value || undefined;
+    setFilter("description", value); 
+    setFilterInput(value);
+  };
+
   const {
     getTableProps,
     getTableBodyProps,
     headerGroups,
     rows,
     prepareRow,
+    setFilter,
     state,
   } = useTable(
     {
       columns,
       data,
     },
+    useFilters,
+    useGlobalFilter,
     useGroupBy,
     useSortBy,
     useExpanded,
@@ -110,6 +126,12 @@ function Table({ columns, data }) {
 
   return (
     <>
+
+      <SearchButton
+        value={filterInput}
+        onChange={handleFilterChange}
+        placeholder="Search all records..."
+      />
 
       {/* <Legend /> */}
       <table {...getTableProps()}>
@@ -204,7 +226,7 @@ function ProductsList({setOrderState, orderState}) {
 
       if (isItemInCart) {
         return prev.map((item) =>
-          item.prod_id === row.original.id
+          item.id === row.original.id
             ? { ...item, qty: item.qty + 1 }
             : item
         );
@@ -213,14 +235,14 @@ function ProductsList({setOrderState, orderState}) {
       console.log(row);
 
       return [...prev, { ...orderState, 
+        id: row.original.id,
                 prod_id: row.original.id, 
             product: row.original.product_code,
             qty: 1,
             supplier: row.original.supplier,
             manufacturer: row.original.manufacturer,
             description: row.original.description,
-          
-      
+            supplier_id: row.original.supplier_id,
       
       }];
     });
@@ -277,8 +299,8 @@ function ProductsList({setOrderState, orderState}) {
       {
         Header: 'Action',
         accessor: 'action',
-        // aggregate: 'count',
-        Aggregated: '',
+        aggregate: 'count',
+        Aggregated: () => '',
         Cell: ({ cell }) => (
           <div>
             <AddCircleIcon onClick={() => handleAddItem(cell.row)} color="success" /> 

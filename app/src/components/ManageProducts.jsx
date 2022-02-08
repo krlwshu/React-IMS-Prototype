@@ -4,7 +4,7 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import axios from 'axios';
-
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 function ManageProducts() {
 
@@ -27,7 +27,7 @@ function ManageProducts() {
   }, [])
 
 
-  const defaultFormState = { supplier: '', type: '', desc: '', manu: '', code: ''};
+  const defaultFormState = { supplier: '', type: '', desc: '', manu: '', code: '', alert:0};
   const [formState, setFormState] = React.useState(defaultFormState);
   const [disabledState, setDisabledState] =
     React.useState(
@@ -37,6 +37,7 @@ function ManageProducts() {
         desc: false,
         manu: false,
         code: false,
+        alert: false,
         textFieldDisabled: true,
         errors:0,
         submitState: false,
@@ -114,14 +115,18 @@ const handleSubmit = () => {
       <div class="container">
         <div class="row align-items-center my-5">
           <div class="col-lg-12">
-
             <Typography variant="h4" component="h4">
               Add New Products
             </Typography>
             <p></p>
+
+
+            {/* <Button size="small" variant="outlined" color="info">
+              <ArrowBackIcon size="small"/> Back
+            </Button> */}
             <Box
               component="form"
-              sx={{
+              sx={{ pt:3,
                 '& .MuiTextField-root': { m: 1, width: '100%' },
               }}
               noValidate
@@ -174,12 +179,26 @@ const handleSubmit = () => {
                   id="manu"
                   onChange={(e) => handleFormChange(e)}
                 />
+                <Tooltip title="Get notified when levels are running low" placement="right">
 
+                  <TextField sx={{ pt: 2, min: 0 }}
+                    disabled={disabledState.textFieldDisabled}
+                    error={disabledState.alert}
+                    label="Stock Alert Level"
+                    type="number"
+                    variant="filled"
+                    id="alert"
+                    InputProps={{ inputProps: { min: 0 } }}
+                    value={formState.alert}
+                    onChange={(e) => handleFormChange(e)}
+                  />
+
+                </Tooltip>
               </div>
 
             </Box>
             <Stack sx={{width:'100%', pt:10}} >
-              <Button sx={{width:250,mb:5}} variant="outlined"  onClick={handleSubmit} hidden={disabledState.submitState} color="success">Create New Product</Button>
+              <Button sx={{width:250}} variant="outlined"  onClick={handleSubmit} hidden={disabledState.submitState} color="success">Create New Product</Button>
               <Alert hidden={disabledState.alert.hidden} severity={disabledState.alert.severity}>{disabledState.alert.message}</Alert>
             </Stack>
 

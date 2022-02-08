@@ -1,7 +1,6 @@
 const express = require('express'); //Line 1
 const app = express(); //Line 2
 const port = process.env.PORT || 5000; //Line 3
-
 const mysql = require('mysql');
 const cors = require('cors');
 
@@ -11,17 +10,19 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 const db = mysql.createConnection({
-    user: 'root',
-    host: 'localhost',
-    password: '',
-    database: 'ims_proto',
-  });
+  user: 'root',
+  host: 'localhost',
+  password: '',
+  database: 'ims_proto',
+});
 
 
-  app.post('/getProducts', async (req, res) => {
-    try {
-  
-      let productSql = `
+
+
+app.post('/getProducts', async (req, res) => {
+  try {
+
+    let productSql = `
       SELECT 
       p.id, 
       category, 
@@ -30,25 +31,31 @@ const db = mysql.createConnection({
       product_code,
       description,
       qty_avail,
+      s.id as supplier_id,
       s.company_name as supplier
       
       FROM products p
       LEFT JOIN suppliers s ON
       p.supplier_id = s.id`;
-  
-      //Get header data from db and create object tree
-      let products = await runQuery(productSql);
-      res.status(200).json(products);
-    } catch (e) {
-      res.sendStatus(500);
-    }
-  });
 
-  app.post('/getOrderItems', async (req, res) => {
-    
-    try {
+    //Get header data from db and create object tree
+    let products = await runQuery(productSql);
+    res.status(200).json(products);
+  } catch (e) {
+    res.sendStatus(500);
+  }
+});
 
-      let productSql = `
+app.post('/getOrderItems', async (req, res) => {
+
+  // TEMP FOR PROTO
+  const { supplierId } = req.body;
+  console.log(supplierId);
+  //
+
+  try {
+
+    let productSql = `
         select
         oi.id as id,
         o.id as parent_order,
@@ -65,38 +72,44 @@ const db = mysql.createConnection({
         JOIN suppliers s ON s.id = o.id_supplier
         `;
 
-
-      //Get header data from db and create object tree
-      let products = await runQuery(productSql);
-      res.status(200).json(products);
-    } catch (e) {
-      res.sendStatus(500);
+    // TEMP FOR PROTO
+    if (supplierId != 0) {
+      productSql += ` where s.id = ${supplierId}`;
     }
-  });
+    //
+    console.log(productSql);
+
+    //Get header data from db and create object tree
+    let products = await runQuery(productSql);
+    res.status(200).json(products);
+  } catch (e) {
+    res.sendStatus(500);
+  }
+});
 
 // Handles Approve, Reject and Partial approvals 
-  // if full Approve, updates current stock level
-  app.post('/processOrderItem', async (req, res) => {
-    const status = { action: 'Process Order', process_status: null, stock_update: null };
-    const data = req.body;
-    
+// if full Approve, updates current stock level
+app.post('/processOrderItem', async (req, res) => {
+  const status = { action: 'Process Order', process_status: null, stock_update: null };
+  const data = req.body;
 
-    try {
-      const order = await updateOrder(data);
-      const inventory = await updateInventoryByOrderId(data.item_order_id, data.app_qty);
-      res.status(200).json([order, inventory]);
-    } catch (e) {
-      console.log("Error updating order");
-      res.status(500).json(e)
-    }
 
+  try {
+    const order = await updateOrder(data);
+    const inventory = await updateInventoryByOrderId(data.item_order_id, data.app_qty);
+    res.status(200).json([order, inventory]);
+  } catch (e) {
+    console.log("Error updating order");
+    res.status(500).json(e)
   }
+
+}
 );
 
 
 const updateOrder = (data) => new Promise((resolve, reject) => {
-  
-  const {app_status, app_qty, item_order_id} = data;
+
+  const { app_status, app_qty, item_order_id } = data;
   let sql = `
     update order_items 
     set supplier_approval_status = ?,
@@ -113,12 +126,12 @@ const updateOrder = (data) => new Promise((resolve, reject) => {
     }
   });
 
-  
+
 });
 
 // Update inventory levels
 const updateInventoryByOrderId = (order, qty) => new Promise((resolve, reject) => {
-  
+
   let approvalFlag = "Approved";
   let sql = `
   update products set qty_avail = (qty_avail + ?) WHERE id IN 
@@ -144,7 +157,7 @@ const updateInventoryByOrderId = (order, qty) => new Promise((resolve, reject) =
 // Get Supplier Details (Form)
 
 app.post('/getSuppliersProductTypes', async (req, res) => {
-    
+
   try {
 
     let productSql = `
@@ -181,7 +194,7 @@ app.post('/createNewProduct', async (req, res) => {
 
 const createNewProduct = (data, qty) => new Promise((resolve, reject) => {
 
-  let {code, desc, type, manu} = data.formState;
+  let { code, desc, type, manu } = data.formState;
   let supplierId = data.supplierId;
 
   let newProductSql = `
@@ -203,7 +216,7 @@ const createNewProduct = (data, qty) => new Promise((resolve, reject) => {
 // Get order updates - dashboard feed
 
 app.post('/getOrderUpdates', async (req, res) => {
-    
+
   try {
 
     let productSql = `
@@ -235,13 +248,140 @@ app.post('/getOrderUpdates', async (req, res) => {
 
 
 // Generic query getter
-  const runQuery = (sql) => new Promise((resolve, reject) => {
-    db.query(sql,
-      (error, results) => {
-        if (error) {
-          return reject(error);
-        }
-        return resolve(results);
-      });
+const runQuery = (sql) => new Promise((resolve, reject) => {
+  db.query(sql,
+    (error, results) => {
+      if (error) {
+        return reject(error);
+      }
+      return resolve(results);
+    });
+});
+
+
+
+
+
+// Submit inventory order
+
+
+// Create new orders
+
+app.post('/submitOrder', async (req, res) => {
+
+  const orderData = req.body;
+  let uniqueSuppliers = [...new Set(orderData.map(item => item.supplier_id))]
+  let ordersCreated = [];
+
+
+  // Create orders and append items
+  try {
+    for (const supplier of uniqueSuppliers) {
+      //Create the order
+      let status = { orderId: await createNewOrder(supplier) };
+
+      // Filter, then create items
+      let orderItems = orderData.filter(item => item.supplier_id === supplier)
+        .map(item => [item.prod_id, item.qty, status.orderId]);
+      status.itemOrderStatus = await createOrderItems(orderItems);
+
+      // Update status to send back to client
+      ordersCreated.push(status);
+    }
+
+    res.status(200).json(ordersCreated);
+  } catch (e) {
+    console.log("Error placing order");
+    res.status(500).json(e)
+  }
+
+});
+
+const createNewOrder = (supplier) => new Promise((resolve, reject) => {
+
+  let createOrderSQl = `
+    insert into orders (id_supplier) values (?)
+  `;
+
+  db.query(createOrderSQl, [supplier], (err, results) => {
+    if (err) {
+      console.log(err);
+      return reject(false)
+    } else {
+      notifySupplierByEmail(results.insertId);
+      return resolve(results.insertId);
+    }
   });
-  
+});
+
+const createOrderItems = (orderItems) => new Promise((resolve, reject) => {
+
+  let createOrderSQl = `
+    insert into order_items (id_product, requested_quantity, order_id) values ?
+  `;
+
+  db.query(createOrderSQl, [orderItems], (err, results) => {
+    if (err) {
+      console.log(err);
+      return reject(false)
+    } else {
+      return resolve("success");
+    }
+  });
+});
+
+
+
+
+
+
+
+
+async function notifySupplierByEmail(order){
+  var nodemailer = require('nodemailer');
+  let getSuppContact = `SELECT
+      contact_email FROM orders o
+      LEFT JOIN suppliers s ON s.id = o.id_supplier
+      WHERE o.id = ${order}`;
+
+  var suppEmail = await runQuery(getSuppContact)
+
+
+  // Create the transporter with the required configuration for Outlook
+  // change the user and pass !
+  var transporter = nodemailer.createTransport({
+    host: "smtp-mail.outlook.com", // hostname
+    secureConnection: false, // TLS requires secureConnection to be false
+    port: 587, // port for secure SMTP
+    tls: {
+      ciphers: 'SSLv3'
+    },
+    auth: {
+      user: "imsdemosystem@outlook.com",
+      pass: "ImsDemo!!!"
+    }
+  });
+
+  console.log(suppEmail[0].contact_email);
+  // setup e-mail data, even with unicode symbols
+  var mailOptions = {
+    from: '"Admin Team " <imsdemosystem@outlook.com>', // sender address (who sends)
+    to: suppEmail[0].contact_email, // list of receivers (who receives)
+    subject: 'New Order Request Received!', // Subject line
+    text: 'New Order ', // plaintext body
+    html: '<b>New Order #' + order + ' </b><br><a href="http://localhost:3000/supplierorders">Please review and submit your response.</a>' // html body
+  };
+
+
+  // send mail with defined transport object
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      return "Error sending mail"
+      return console.log(error);
+    }
+
+  });
+  return "success"
+
+};
+

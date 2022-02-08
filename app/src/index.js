@@ -28,10 +28,6 @@ ReactDOM.render(
       <Route path="/manageproducts" element={<ManageProducts />} />
       <Route path="/supplierorders" element={<SupplierManageOrders />} />
       <Route path="/manageorders" element={<ManageOrders />} />
-      <Route path="/blog" element={<Blog />}>
-        <Route path="" element={<Posts />} />
-        <Route path=":postSlug" element={<Post />} />
-      </Route>
     </Routes>
     <Footer />
   </Router>,
