@@ -68,6 +68,7 @@ app.post('/getOrderItems', async (req, res) => {
         oi.requested_quantity,
         oi.supplier_approval_status,
         p.manufacturer,
+        oi.supp_avail_qty,
         IF(oi.supp_avail_qty IS null, oi.requested_quantity, oi.supp_avail_qty) AS available
         FROM orders o
 
@@ -235,6 +236,10 @@ app.post('/getOrderUpdates', async (req, res) => {
       p.manufacturer,
       oi.supplier_approval_status, 
       oi.supp_avail_qty, 
+      s.company_name,
+      o.date_created,
+      p.qty_avail,
+      p.alert_level,
       oi.last_updated FROM orders o
       JOIN order_items oi ON o.id = oi.order_id
       JOIN suppliers s ON s.id = o.id_supplier
@@ -390,3 +395,57 @@ async function notifySupplierByEmail(order){
 
 };
 
+
+
+app.post('/getAlerting', async (req, res) => {
+
+  try {
+
+    let productSql = `
+      SELECT 
+        * from products where qty_avail < alert_level       
+      `;
+
+
+    //Get header data from db and create object tree
+    let products = await runQuery(productSql);
+    res.status(200).json(products);
+  } catch (e) {
+    res.sendStatus(500);
+  }
+});
+
+
+
+
+
+app.post('/processOrderApproveCancel', async (req, res) => {
+  const {item, appStatus} = req.body;
+console.log(appStatus);
+
+  try {
+    const orderUpdateStatus = await updateOrderLineItem(item, appStatus);
+    res.status(200).json([orderUpdateStatus]);
+  } catch (e) {
+    console.log("Error updating line item");
+    res.orderUpdateStatus(500).json(e)
+  }
+
+}
+);
+
+
+const updateOrderLineItem = (item, status) => new Promise((resolve, reject) => {
+
+  let sql = `update order_items set im_approval = ? where id = ?`
+
+  db.query(sql, [status, item], (err, results) => {
+    if (err) {
+      console.log(err);
+
+      return reject(false)
+    } else {
+      return resolve("Order Item Updated");
+    }
+  });
+});

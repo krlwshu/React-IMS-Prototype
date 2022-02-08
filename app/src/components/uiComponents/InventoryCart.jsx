@@ -76,6 +76,25 @@ export default function InventoryCart(props) {
       setOpen(false);
     };
   
+    const [totalQty, setTotalQty] = React.useState(0);
+    const handleChangeQty = (e, prod_id) => {
+        setOrderState((prev) => {
+          const itemId = prev.find((item) => item.id === prod_id);
+    
+          if (itemId) {
+            return prev.map((item) =>
+              item.id === prod_id
+                ? { ...item, qty: e.target.value }
+                : item
+            );
+          }
+        });
+        console.log(orderState);
+
+        
+    };
+    
+
 
     const toggleDrawer = (anchor, open) => (event) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -85,7 +104,8 @@ export default function InventoryCart(props) {
         setOpenState(false);
     };
 
-    const itemCount = orderState.length? orderState.map(item => item.qty).reduce((prev, next) => prev + next) : 0;
+    
+    const itemCount = orderState.length? orderState.map(item => item.qty).reduce((prev, next) => parseInt(prev) + parseInt(next)) : 0;
 
     const list = (anchor) => (
         <StyledBox
@@ -94,7 +114,7 @@ export default function InventoryCart(props) {
         >
             <Box sx={{ m: 3 }} >
                 <Typography variant="h4" component="h3">
-                    Order New Items({itemCount})
+                    Order New Items ({itemCount})
                 </Typography>
             </Box>
             
@@ -117,9 +137,11 @@ export default function InventoryCart(props) {
                             <TextField edge="end"
                                 id="standard-number"
                                 type="number"
+                                onChange={(e)=>handleChangeQty(e,item.prod_id)}
                                 InputLabelProps={{
-                                    shrink: true,
+                                    shrink: true
                                 }}
+                                inputProps={{min:0}}
                                 variant="standard"
                                 defaultValue={item.qty}
                                 />

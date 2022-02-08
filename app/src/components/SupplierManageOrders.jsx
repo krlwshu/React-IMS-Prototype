@@ -215,7 +215,7 @@ export default function DataTable() {
           <div class="col-lg-12">
 
             <Typography variant="h3" component="h3" sx={{ pb: 5, fontWeight: 400 }}>
-              Manage Orders
+              New Order Requests ({(orderData.length)&& orderData.length || 0})
             </Typography>
 
           </div>

@@ -232,8 +232,6 @@ function ProductsList({setOrderState, orderState}) {
         );
       }
 
-      console.log(row);
-
       return [...prev, { ...orderState, 
         id: row.original.id,
                 prod_id: row.original.id, 
@@ -280,6 +278,12 @@ function ProductsList({setOrderState, orderState}) {
       {
         Header: 'Product Type',
         accessor: 'category',
+        aggregate: 'uniqueCount',
+        Aggregated: ({ value }) => `${value} Unique Products`,
+      },
+      {
+        Header: 'Manufacturer',
+        accessor: 'manufacturer',
         aggregate: 'uniqueCount',
         Aggregated: ({ value }) => `${value} Unique Products`,
       },

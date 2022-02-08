@@ -42,6 +42,24 @@ export default function Dashboard() {
     }
   }, []);
 
+
+  const [loadingDataAlerts, setLoadingDataAlerts] = useState(true);
+  const [alertingData, setAlertingData] = useState([]);
+
+  useEffect(() => {
+    async function getData() {
+      await axios
+        .post("/getAlerting")
+        .then(({ data }) => {
+          setAlertingData(data);
+          setLoadingDataAlerts(false);
+        });
+    }
+    if (loadingDataAlerts) {
+      getData();
+    }
+  }, []);
+
   return (
     <React.Fragment>
 
@@ -54,120 +72,108 @@ export default function Dashboard() {
             <Card sx={{ p: 5, radius: 5 }}>
 
               <Stack direction="row">
-                <HourglassBottomOutlinedIcon color="primary" sx={{ fontSize: 50 }} aria-label="">
+                <HourglassBottomOutlinedIcon color="primary" sx={{ fontSize: 40 }} aria-label="">
                 </HourglassBottomOutlinedIcon>
-                <Typography sx={{ pl: 5 }} variant="h4" color="primary">Top Products</Typography>
+                <Typography sx={{ pl: 5 }} variant="h5" component="h5" color="primary">Awaiting IM Approval</Typography>
               </Stack>
               <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
-                <ListItem>
-                  <ListItemAvatar>
-                    <Avatar>
-                      <ImageIcon />
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText primary="Photos" secondary="Jan 9, 2014" />
-                </ListItem>
-                <ListItem>
-                  <ListItemAvatar>
-                    <Avatar>
-                      <WorkIcon />
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText primary="Work" secondary="Jan 7, 2014" />
-                </ListItem>
-                <ListItem>
-                  <ListItemAvatar>
-                    <Avatar>
-                      <RouterIcon />
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText primary="Vacation" secondary="July 20, 2014" />
-                </ListItem>
+
+                {
+                  data.filter((item) => item.supplier_approval_status == 'Partial').map(item =>
+                  (
+
+                    <React.Fragment>
+                      <ListItem key={item.id}>
+                        <ListItemAvatar>
+                          <Avatar>
+                            <RouterIcon />
+                          </Avatar>
+                        </ListItemAvatar>
+                        <ListItemText primary={`#${item.id} ${item.company_name}`}
+                          secondary={`${item.supp_avail_qty}/${item.requested_quantity} available (${item.product_code})`}
+                        />
+                      </ListItem>
+                      <Divider />
+                    </React.Fragment>
+                  )
+                  )
+                }
+
+              </List>
+            </Card>
+          </div>
+          <div className="col-lg-3">
+            <Card sx={{ p: 5, radius: 5 }}>
+
+              <Stack direction="row">
+                <HourglassBottomOutlinedIcon color="secondary" sx={{ fontSize: 40 }} aria-label="">
+                </HourglassBottomOutlinedIcon>
+                <Typography sx={{ pl: 5 }} variant="h5" component="h5" color="secondary">Awaiting Supplier Response</Typography>
+              </Stack>
+              <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+
+                {
+                  data.filter((item) => item.supplier_approval_status == 'New').map(item =>
+                  (
+
+                    <React.Fragment>
+                      <ListItem key={item.id}>
+                        <ListItemAvatar>
+                          <Avatar>
+                            <RouterIcon />
+                          </Avatar>
+                        </ListItemAvatar>
+                        <ListItemText primary={`#${item.id} ${item.company_name}`}
+                          secondary={`${item.requested_quantity} items requested (${item.product_code})`}
+                        />
+                      </ListItem>
+                      <Divider />
+
+                    </React.Fragment>
+                  )
+                  )
+                }
+
+              </List>
+            </Card>
+          </div>          
+          <div className="col-lg-6">
+            <Card sx={{ p: 5, radius: 5 }}>
+
+              <Stack direction="row">
+                <WarningAmberIcon sx={{ fontSize: 40, color: 'orange' }} aria-label="">
+                </WarningAmberIcon>
+                <Typography sx={{ color: 'orange', pl: 5 }} variant="h5" color="primary">Low Quantity Alerts</Typography>
+              </Stack>
+              <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
+
+                {
+                  alertingData.map(item =>
+                  (
+
+                    <React.Fragment>
+                      <ListItem key={item.id}>
+                        <ListItemAvatar>
+                          <Avatar>
+                            <RouterIcon />
+                          </Avatar>
+                        </ListItemAvatar>
+                        <ListItemText primary={`${item.manufacturer} - ${item.description} `}
+                          secondary={`${item.qty_avail} items remaining - alert if below: ${item.alert_level}`}
+                        />
+                      </ListItem>
+                      <Divider />
+
+                    </React.Fragment>
+                  )
+                  )
+                }
+
               </List>
             </Card>
 
-
           </div>
-          <div className="col-lg-5">
-            <Card sx={{ p: 5, radius: 5 }}>
 
-              <Stack direction="row">
-                <HourglassBottomOutlinedIcon sx={{ fontSize: 50, color: 'orange' }} aria-label="">
-                </HourglassBottomOutlinedIcon>
-                <Typography sx={{ color: 'orange', pl: 5 }} variant="h4" color="primary">Pending Orders</Typography>
-              </Stack>
-              <Box sx={{ p: 5 }}>
-                Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit enim
-                labore culpa sint ad nisi Lorem pariatur mollit ex esse exercitation amet. Nisi
-              </Box>
-            </Card>
-
-            <Card sx={{ p: 5, radius: 5 }}>
-
-              <Stack direction="row">
-                <DoneOutlineOutlinedIcon sx={{ fontSize: 50, color: 'lightgreen' }} aria-label="">
-                </DoneOutlineOutlinedIcon>
-                <Typography sx={{ color: 'lightgreen', pl: 5 }} variant="h4" color="primary">Approved Orders</Typography>
-              </Stack>
-              <Box sx={{ p: 5 }}>
-                Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit enim
-                labore culpa sint ad nisi Lorem pariatur mollit ex esse exercitation amet. Nisi
-              </Box>
-            </Card>
-
-
-          </div>
-          <div className="col-lg-4">
-            <StyledCard >
-
-            <Stack sx={{ p: 5 }} direction="row">
-              <HourglassBottomOutlinedIcon sx={{ fontSize: 40, color:'white' }} />
-              <Typography  sx={{ ml: 5, color:'white' }}variant="h4" color="whi">Orders Status Feed</Typography>
-            </Stack>
-            <List sx={{  bgcolor: 'background.paper' }}>
-            {/* <Grid container spacing={2}>
-            <Grid item xs={2}>             </Grid>
-            <Grid item sx={{fontWeight:700}} xs={6}>Part</Grid>
-            <Grid item sx={{fontWeight:700}} xs={4}>Quantity</Grid>
-            <Divider />
-              </Grid> */}
-              {data.map(item => (
-                <React.Fragment>
-
-                  <ListItem>
-
-
-                    <Grid container spacing={2}>
-                      <Grid item xs={2}>
-                        {(item.supplier_approval_status == 'Approved') &&
-                          <CheckCircleIcon variant="outlined" sx={{color:'lightgreen', fontSize:50 }} />
-                        }
-
-                        {(item.supplier_approval_status == 'Partial') &&
-                          <WarningAmberIcon variant="outlined" sx={{ color: 'orange', fontSize:50 }} />
-                        }
-                        {(item.supplier_approval_status != 'Partial' && item.supplier_approval_status != 'Approved') &&
-                          <FiberNewIcon  sx={{ fontSize:50 }} variant="outlined" color="info" />
-                        }                     
-
-                      </Grid>
-                      <Grid item xs={6}>
-                        {`${(item.supp_avail_qty)? item.supp_avail_qty : 0} / ${item.requested_quantity}`}
-                        <ListItemText primary={`Product: ${item.product_code}`} secondary={`Vendor: ${item.manufacturer}`} />
-                      </Grid>
-                      <Grid item xs={4}>
-                         {(item.supplier_approval_status === 'Partial' ) && "Action Required"} <br/><b> Order#:</b> {item.id} 
-                      </Grid>
-                    </Grid>
-                    
-                  </ListItem>
-                  <Divider />
-                </React.Fragment>
-
-              ))}
-            </List>              
-            </StyledCard>
-          </div>
         </div>
 
 

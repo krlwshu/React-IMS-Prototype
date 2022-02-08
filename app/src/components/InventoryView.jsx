@@ -18,7 +18,7 @@ function Inventory() {
 
 
     //Sum up all qty of ordered inventory if orderState is set, else 0 
-    const productCount = orderState.length? orderState.map(item => item.qty).reduce((prev, next) => prev + next) : 0;
+    const productCount = orderState.length? orderState.map(item => item.qty).reduce((prev, next) => parseInt(prev) + parseInt(next)) : 0;
     
 
     useEffect(() => {
@@ -49,7 +49,7 @@ function Inventory() {
                         <Typography variant="h5" component="h5">
                             Inventory List
                         </Typography>
-
+<p>Search for parts and order new items</p>
                         <br />
                         <DataTable 
                             setOrderState={setOrderState}
