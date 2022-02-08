@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import {useSearchParams} from 'react-router-dom';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import axios from 'axios';
 import { Typography, Button, Stack, TextField } from '@mui/material'
@@ -15,6 +16,9 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
 
+import {StyledContainer} from './uiComponents/styled/Order.styles';
+
+
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -27,16 +31,21 @@ export default function DataTable() {
     setSubmitDialogOpen(false);
   };
 
-
-
   // Load Data
 
   const [expanded, setExpanded] = React.useState(false);
   const [loadingData, setLoadingData] = useState(true);
   const [orderData, setOrderData] = useState([]);
 
+  // TEMP
+  const [searchParams, setSearchParams] = useSearchParams();
+  // console.log(searchParams.get("s"));
+  if(searchParams.get("s")){
+  localStorage.setItem("supplier_id",searchParams.get("s"))}
+
 
   async function getData() {
+    
     const filter = {supplierId: parseInt(localStorage.getItem("supplier_id"))}
     await axios
       .post("/getOrderItems", filter)
@@ -106,9 +115,16 @@ export default function DataTable() {
       width: 160
     },
     {
-      field: 'action',
-      headerName: 'Action',
+      field: 'date_created',
+      headerName: 'Date Created',
       description: 'This column has a value getter and is not sortable.',
+      sortable: true,
+      width: 160
+    },
+    {
+      field: 'action',
+      headerName: 'Order Response',
+      description: '',
       sortable: false,
       filterable: false,
       width: 300,
@@ -194,7 +210,7 @@ export default function DataTable() {
 
 
     <div className="supplier_orders">
-      <div class="container">
+      <StyledContainer class="container">
         <div class="row align-items-center my-5">
           <div class="col-lg-12">
 
@@ -217,7 +233,7 @@ export default function DataTable() {
             </div>
           </div>
         </div>
-      </div>
+      </StyledContainer>
 
       <Dialog
         open={submitDialogOpen}

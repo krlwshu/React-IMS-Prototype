@@ -53,12 +53,16 @@ app.post('/getOrderItems', async (req, res) => {
   console.log(supplierId);
   //
 
+  let filter = (supplierId != 0) ?  ` where s.id = ${supplierId} ` : '';
+
   try {
 
+    
     let productSql = `
         select
         oi.id as id,
         o.id as parent_order,
+        DATE_FORMAT(o.date_created, '%Y-%d-%d %H:%i') as date_created,
         s.company_name,
         p.product_code,
         oi.requested_quantity,
@@ -70,12 +74,13 @@ app.post('/getOrderItems', async (req, res) => {
         JOIN order_items oi ON o.id = oi.order_id
         JOIN products p ON p.id = oi.id_product
         JOIN suppliers s ON s.id = o.id_supplier
+
+        ${filter}
+        order by o.date_created asc
         `;
 
     // TEMP FOR PROTO
-    if (supplierId != 0) {
-      productSql += ` where s.id = ${supplierId}`;
-    }
+    
     //
     console.log(productSql);
 
@@ -340,11 +345,11 @@ const createOrderItems = (orderItems) => new Promise((resolve, reject) => {
 async function notifySupplierByEmail(order){
   var nodemailer = require('nodemailer');
   let getSuppContact = `SELECT
-      contact_email FROM orders o
+      contact_email, s.id, company_name FROM orders o
       LEFT JOIN suppliers s ON s.id = o.id_supplier
       WHERE o.id = ${order}`;
 
-  var suppEmail = await runQuery(getSuppContact)
+  var supp = await runQuery(getSuppContact)
 
 
   // Create the transporter with the required configuration for Outlook
@@ -362,14 +367,14 @@ async function notifySupplierByEmail(order){
     }
   });
 
-  console.log(suppEmail[0].contact_email);
+  console.log(supp[0].contact_email);
   // setup e-mail data, even with unicode symbols
   var mailOptions = {
     from: '"Admin Team " <imsdemosystem@outlook.com>', // sender address (who sends)
-    to: suppEmail[0].contact_email, // list of receivers (who receives)
+    to: supp[0].contact_email, // list of receivers (who receives)
     subject: 'New Order Request Received!', // Subject line
     text: 'New Order ', // plaintext body
-    html: '<b>New Order #' + order + ' </b><br><a href="http://localhost:3000/supplierorders">Please review and submit your response.</a>' // html body
+    html: '<p>Dear '+ supp[0].company_name+'</p><b>You Have a New Order #' + order + ' </b><br><a href="http://localhost:3000/supplierorders?s='+supp[0].id+'">Please review and submit your response.</a>' // html body
   };
 
 
