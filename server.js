@@ -68,6 +68,7 @@ app.post('/getOrderItems', async (req, res) => {
         oi.requested_quantity,
         oi.supplier_approval_status,
         p.manufacturer,
+        oi.im_approval,
         oi.supp_avail_qty,
         IF(oi.supp_avail_qty IS null, oi.requested_quantity, oi.supp_avail_qty) AS available
         FROM orders o
@@ -433,6 +434,7 @@ console.log(appStatus);
 
 }
 );
+
 
 
 const updateOrderLineItem = (item, status) => new Promise((resolve, reject) => {

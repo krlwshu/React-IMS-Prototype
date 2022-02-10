@@ -27,7 +27,7 @@ function Home() {
     {
       role: "Supplier Network Parts Ltd.",
       desc: "As an supplier, we work as part of a global supply chain. Efficiency is key to success of our customers.",
-      journey: "Supplier Journey - GTX Networks",
+      journey: "Supplier Journey - Network parts Ltd",
       avatar: "avatar1.png",
       name: "Jack",
       link: "supplierorders",

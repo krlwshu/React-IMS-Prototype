@@ -86,7 +86,7 @@ export default function DataTable() {
     { field: 'manufacturer', headerName: 'Manufacturer', width: 130 },
     { field: 'requested_quantity', headerName: 'Qty. Requested', width: 130 },
     {
-      field: 'available',
+      field: 'supp_avail_qty',
       headerName: 'Available',
       width: 130,
       renderCell: (row) => {
@@ -97,8 +97,8 @@ export default function DataTable() {
             InputLabelProps={{
               shrink: true,
             }}
-            InputProps={{ inputProps: { min: 0, max: row.row.requested_quantity }, defaultValue: row.row.requested_quantity }}
-            value={orderData.findIndex(item => item.id == row.id).available}
+            InputProps={{ inputProps: { min: 0, max: row.row.requested_quantity }, defaultValue: row.row.supp_avail_qty }}
+            value={orderData.findIndex(item => item.id == row.id).supp_avail_qty}
             onChange={(e) => {
               handleAvaChange(e, row);
             }}

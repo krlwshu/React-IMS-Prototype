@@ -21,7 +21,7 @@ function ManageOrders() {
   const [loadingData, setLoadingData] = useState(true);
   const [data, setData] = useState([]);
 
-  useEffect(() => {
+
     async function getData() {
       await axios
         .post("/getOrderItems", { supplierId: 0 })
@@ -30,11 +30,12 @@ function ManageOrders() {
           setLoadingData(false);
         });
     }
-    if (loadingData) {
-      getData();
-    }
-  }, []);
 
+
+  useEffect(() => {
+
+    getData()
+  }, [])
 
   return (
     <div className="contact">
@@ -64,7 +65,7 @@ function ManageOrders() {
                     {/* <Typography sx={{ color: 'text.secondary', fontWeight: 800 }}>Supplier : {row.company_name}</Typography> */}
                   </AccordionSummary>
                   <AccordionDetails>
-                    <OrderTable parent_order={parent_order} orderData={data} />
+                    <OrderTable getData={getData} parent_order={parent_order} orderData={data} />
                   </AccordionDetails>
                 </Accordion>
               ))}
@@ -83,7 +84,7 @@ export default ManageOrders;
 
 function OrderTable(props) {
 
-  const { parent_order, orderData } = props;
+  const { parent_order, orderData, getData } = props;
   const orderItems = orderData.filter(item => item.parent_order === parent_order);
 
 
@@ -108,6 +109,9 @@ const processItemOrderUpdate = (itemId, appStatus) => {
       }
     })
     .catch(e => { console.log(e) })
+
+
+    getData();
 };
 
 
@@ -139,21 +143,21 @@ const processItemOrderUpdate = (itemId, appStatus) => {
                 <TableCell component="th" scope="row">{subItems.company_name}</TableCell>
                 <TableCell component="th" scope="row">{subItems.product_code}</TableCell>
                 <TableCell component="th" scope="row">{subItems.requested_quantity}</TableCell>
-                <TableCell component="th" scope="row">{subItems.requested_quantity}</TableCell>
+                <TableCell component="th" scope="row">{subItems.supp_avail_qty}</TableCell>
                 <TableCell component="th" scope="row">{subItems.supplier_approval_status}</TableCell>
                 <TableCell component="th" scope="row"><b>{subItems.im_approval}</b> </TableCell>
                 <TableCell component="th" scope="row">
 
 
                 <Stack spacing={2} pt={2} direction="row">
-                  {(subItems.supplier_approval_status === "Partial" && subItems.im_approval != 'Approved')  &&
+                  {(subItems.supplier_approval_status === "Partial" && subItems.im_approval !== 'Canceled')  &&
                   
                       <Button variant="text" onClick={() => handleApprove(subItems.id)} color="success" variant="outlined">
                         Approve
                       </Button>
                   }
                       {
-                    subItems.supplier_approval_status !== "Approved"   &&
+                    subItems.supplier_approval_status !== "Approved" && subItems.im_approval !== "Canceled"   &&
                       <Button variant="text"  onClick={() => handleCancel(subItems.id)} color="error" variant="outlined">
                         Cancel
                       </Button>
