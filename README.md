@@ -31,4 +31,4 @@ Database is located in root for convenience
 -```npm start``` - **will run the prototype in development mode, ```npm build app``` wont work as backend proxy is configured for development and API requests will fail.**
 
 #Notes:
-- Line ```Server.js Line 372``` needs to be updated with SMTP credentials, supplied offline (just a test account). But is can use any other Microsoft test account instead for the purposes of sending emails.
+- Line ```Server.js Line 372``` needs to be updated with SMTP credentials, supplied offline (just a test account). But is can use any other Microsoft test account instead for the purposes of sending supplier notification emails.
