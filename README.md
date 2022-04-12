@@ -29,3 +29,6 @@ Database is located in root for convenience
 -From root: ```node run server```
 -```cd app```
 -```npm start``` - **will run the prototype in development mode, ```npm build app``` wont work as backend proxy is configured for development and API requests will fail.**
+
+#Notes:
+- Line ```Server.js Line 372``` needs to be updated with SMTP credentials, supplied offline (just a test account). But is can use any other Microsoft test account instead for the purposes of sending emails.
