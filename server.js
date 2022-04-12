@@ -369,7 +369,7 @@ async function notifySupplierByEmail(order){
     },
     auth: {
       user: "imsdemosystem@outlook.com",
-      pass: "ImsDemo!!!"
+      pass: "<EMAIL_PASS>"
     }
   });
 
