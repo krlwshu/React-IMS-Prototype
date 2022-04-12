@@ -26,5 +26,6 @@ Database is located in root for convenience
 
 ## Start server
 
-<root>: ```node run server```
-./app/ ```npm start``` - will run the prototype in development mode, build wont work as backend proxy is configured for development.
+-From root: ```node run server```
+-```cd app```
+-```npm start``` - **will run the prototype in development mode, ```npm build app``` wont work as backend proxy is configured for development and API requests will fail.**
